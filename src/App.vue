@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <transition :name="transitionName">
-      <router-view :contentkey="contentIndex" :groupingFriendList="groupingFriendList" @onuserid="onuser_id"></router-view>
+      <router-view ref="chile" :contentkey="contentIndex" :userAllMsg="userAllMsg" :groupingFriendList="groupingFriendList" :friendsList="friendsList" @onuserid="onuser_id" @findUserApplyDeal="chileApplyDeal"></router-view>
     </transition>
   </div>
 </template>
@@ -78,7 +78,17 @@ export default {
                   },
               ]
           },*/
-      ]
+      ],
+      userAllMsg:{
+          /*'2':[
+              {
+                  user_id:1,
+                  user_name:'张三',
+                  img:'http://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg',
+                  msg:'嗨，欢迎体验LayIM。演示标记：1530843285035'
+              }
+          ]*/
+      }, //用户所有的聊天记录
     }
   },
   methods:{
@@ -169,6 +179,9 @@ export default {
     },
     onuser_id(user_id){
       this.user_id = user_id
+    },
+    chileApplyDeal(item,type){
+      this.$refs.chile.applyDeal(item,type)
     }
   },
   mounted(){
@@ -212,19 +225,19 @@ export default {
   position: absolute;
 }
 .slide-right-enter {
-  /*opacity: 0;*/
+  opacity: 0;
   transform: translate3d(-100%, 0, 0);
 }
 .slide-right-leave-active {
-  /*opacity: 0;*/
+  opacity: 0;
   transform: translate3d(100%, 0, 0);
 }
 .slide-left-enter {
-  /*opacity: 0;*/
+  opacity: 0;
   transform: translate3d(100%, 0, 0);
 }
 .slide-left-leave-active {
-  /*opacity: 0;*/
+  opacity: 0;
   transform: translate3d(-100%, 0, 0);
 }
 

@@ -40,7 +40,7 @@ export default {
 			ws:{}
 		}
 	},
-	props: [],
+	props: ['groupingFriendList'],
 	methods: {
 		loginSubmit() {
 			console.log(this.username)

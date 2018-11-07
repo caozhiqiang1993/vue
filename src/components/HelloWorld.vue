@@ -13,7 +13,7 @@
       <!-- 聊天记录列表start -->
       <div id="chat_log" v-show="contentIndex == 0">
         <ul>
-            <li v-for="item,key in userAllMsg" @click="handleRouter(key)">
+            <li v-for="item,key in userAllMsg" @click="sendMsg(key)">
               <div class="img_box">
                 <span><img :src="friendsList[key].img"></span>
               </div>
@@ -81,7 +81,7 @@
       <div id="more" v-show="contentIndex == 2">
         <ul>
           <template v-for="item,key in more">
-            <li v-if="key == 0" @click="userLeft == 100 ?userLeft=0:userLeft=100">
+            <li v-if="key == 0" @click="handleRouter('user')">
               <div class="more_img">
                 <i :class="item.icon"></i>
               </div>
@@ -121,203 +121,18 @@
 </template>
 
 <script>
-  var emoji = '😀 😁 😂 😃 😄 😅 😆 😉 😊 😋 😎 😍 😘 😗 😙 😚 😇 😐 😑 😶 😏 😣 😥 😮 😯 😪 😫 😴 😌 😛 😜 😝 😒 😓 😔 😕 😲 😷 😖 😞 😟 😤 😢 😭 😦 😧 😨 😬 😰 😱 😳 😵 😡 😠';
-  var emoji_arr = []
-  emoji_arr = emoji.split(' ');
-  var emoji_data = {}
-  var start = 0;
-  var end = 0
-  var row = 10;
-  for(var i=1;i<=5;i++){
-      start = (i-1)*row
-      end = row*i
-      emoji_data[i] = emoji_arr.slice(start,end);
-  }
-  var dataInfo = {
-      msg: 'Welcome to Your Vue.js App',
-      title: '我的IM',
-      contentIndex: 0,
-      user_id: 1,
-      user_name: 'test',
-      left: 100, //聊天left
-      findUserLeft: 100,  //查找好友left
-      userInfoLeft: 100,  //好友信息left
-      userLeft: 100,  //个人信息left
-      findUserInfo: {},  //查找好友的信息
-      findApplyList: {
-          wCount:2,
-          list:[
-              /*{
-                  id:'1',
-                  user_name:'张三',
-                  img:'http://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg',
-                  memo:'嗨，欢迎体验LayIM。演示标记：1530843285035',
-                  status:0
-              }*/
-          ]
-      },  //查找好友的信息
-      msgTitle: {}, //当前聊天的用户
-      Message:'',
-      findUserText:'',
-      userMsg:[], //当前聊天界面的记录
-      userAllMsg:{
-          /*'1-2':[
-              {
-                  user_id:1,
-                  user_name:'张三',
-                  img:'http://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg',
-                  msg:'嗨，欢迎体验LayIM。演示标记：1530843285035'
-              }
-          ]*/
-      }, //用户所有的聊天记录
-      footerInfo:[
-          {
-              text:'消息',
-              iconName:'iconfont icon-cc-message'
-          },
-          {
-              text:'联系人',
-              iconName:'iconfont icon-user'
-          },
-          {
-              text:'更多',
-              iconName:'iconfont icon-more'
-          }
-      ],
-      friendsHeader:[
-          {
-              text:'新的朋友',
-              iconName:'iconfont icon-plus'
-          },
-          {
-              text:'群聊',
-              iconName:'iconfont icon-users'
-          }
-      ],
-      friendsList:{}, //好友列表
-      groupingList:[], //分组信息
-      groupingFriendList:[
-          /*{
-              id:1,
-              name:'知名人物',
-              show:false,
-              num:'5',
-              users:[
-                  {
-                      user_id:1,
-                      img:'http://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg',
-                      user_name:'张三',
-                      autograph:'这些都是测试数据，实际使用请严格按照该格式返回'
-                  },
-                  {
-                      user_id:2,
-                      img:'http://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg',
-                      user_name:'张三',
-                      autograph:'这些都是测试数据，实际使用请严格按照该格式返回'
-                  },
-              ]
-          },
-          {
-              id:2,
-              name:'知名人物2',
-              show:false,
-              num:'5',
-              users:[
-                  {
-                      user_id:3,
-                      img:'http://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg',
-                      user_name:'张三',
-                      autograph:'这些都是测试数据，实际使用请严格按照该格式返回'
-                  },
-                  {
-                      user_id:4,
-                      img:'http://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg',
-                      user_name:'张三',
-                      autograph:'这些都是测试数据，实际使用请严格按照该格式返回'
-                  },
-              ]
-          },
-          {
-              id:3,
-              name:'知名人物3',
-              show:false,
-              num:'5',
-              users:[
-                  {
-                      user_id:5,
-                      img:'http://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg',
-                      user_name:'张三',
-                      autograph:'这些都是测试数据，实际使用请严格按照该格式返回'
-                  },
-                  {
-                      user_id:6,
-                      img:'http://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg',
-                      user_name:'张三',
-                      autograph:'这些都是测试数据，实际使用请严格按照该格式返回'
-                  },
-              ]
-          },*/
-      ], //分组好友信息
-      more:[
-          {
-              icon:'iconfont icon-shezhi',
-              name:'设置'
-          },
-          {
-              icon:'iconfont icon-find',
-              name:'分享'
-          },
-          {
-              icon:'iconfont icon-iconset0103',
-              name:'关于'
-          },
-      ],
-      websock:null,
-      emoji:emoji_data,
-      isShowEmoji:0
-  }
+  
 import findUser from './FindUser.vue'
 export default {
   name: 'HelloWorld',
-  props: ['contentkey','groupingFriendList'],
+  props: ['contentkey','groupingFriendList','userAllMsg','friendsList'],
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
       title: '我的IM',
       contentIndex: this.Global.contentIndex,
-      user_id: 1,
+      user_id: this.Global.user_id,
       user_name: 'test',
-      left: 100, //聊天left
-      findUserLeft: 100,  //查找好友left
-      userInfoLeft: 100,  //好友信息left
-      userLeft: 100,  //个人信息left
-      findUserInfo: {},  //查找好友的信息
-      findApplyList: {
-          wCount:2,
-          list:[
-              /*{
-                  id:'1',
-                  user_name:'张三',
-                  img:'http://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg',
-                  memo:'嗨，欢迎体验LayIM。演示标记：1530843285035',
-                  status:0
-              }*/
-          ]
-      },  //查找好友的信息
-      msgTitle: {}, //当前聊天的用户
-      Message:'',
-      findUserText:'',
-      userMsg:[], //当前聊天界面的记录
-      userAllMsg:{
-          /*'1-2':[
-              {
-                  user_id:1,
-                  user_name:'张三',
-                  img:'http://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg',
-                  msg:'嗨，欢迎体验LayIM。演示标记：1530843285035'
-              }
-          ]*/
-      }, //用户所有的聊天记录
       footerInfo:[
           {
               text:'消息',
@@ -342,9 +157,6 @@ export default {
               iconName:'iconfont icon-users'
           }
       ],
-      friendsList:{}, //好友列表
-      groupingList:[], //分组信息
-      // groupingFriendList:this.groupingFriendList2, //分组好友信息
       more:[
           {
               icon:'iconfont icon-shezhi',
@@ -360,8 +172,6 @@ export default {
           },
       ],
       websock:null,
-      emoji:emoji_data,
-      isShowEmoji:0
     }
   },
   components: {
@@ -370,6 +180,10 @@ export default {
   methods:{
     handleChild:function(name){
       this.$refs.findUser.parentHandleclick("嘿嘿嘿");
+    },
+    sendMsg(user_id){
+      this.Global.msg_friend = user_id
+      router.push({path:'/msg'});
     },
     handleRouter(url,data){
       router.push({path:'/'+url,query:data});
@@ -435,10 +249,7 @@ export default {
     }
   },
   mounted() {
-    // this.threadPoxi()
-    // console.log(this.$socket)
-        // this.socket.connectSocket()
-        // this.userFriend() //获取好友
+
   },
   watch:{
     contentIndex(){
@@ -609,6 +420,7 @@ export default {
   }
    .friends_info_box{
     display: inline-block;
+    vertical-align: top;
   }
   .friends_info_box p{
     color:#999;

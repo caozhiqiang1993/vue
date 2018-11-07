@@ -29,22 +29,25 @@ Vue.prototype.Global=Global
 /*import axios from 'axios'
 Vue.prototype.http = axios*/
 
-import MintUI from 'mint-ui'
-import 'mint-ui/lib/style.css'
+// import MintUI from 'mint-ui'
+// import 'mint-ui/lib/style.css'
 // import './css/my-mint.css'
-Vue.use(MintUI)
+// Vue.use(MintUI)
 
-Vue.prototype.MintUI = MintUI;
+// Vue.prototype.MintUI = MintUI;
 
 if(storage.get('user_id') != "undefined" && storage.get('user_id')){
   Global.user_id = storage.get('user_id')
 }
 //跳转判断
 router.beforeEach((to, from, next) => {
-  // console.log(to)
+  // console.log(from)
   //根据字段判断是否路由过滤
   if (to.meta.auth) {
     if (storage.get('key') > 0) {
+      if(from.path == '/msg' && to.path == '/'){
+        Global.contentIndex = 0
+      }
 		  next()
 		  return
     } else {

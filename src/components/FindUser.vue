@@ -12,16 +12,22 @@
     </div>
     <div class="applyList">
       <ul>
-        <li v-for="item in findApplyList.list" @click="checkUserInfo(item,2)">
+        <li v-for="item in findApplyList" @click="checkUserInfo(item,2)">
           <div class="img_box">
-            <span><img :src="item.img"></span>
+            <span>
+              <img :src="item.img" v-if="item.fuid == user_id">
+              <img :src="item.ut_img" v-else>
+            </span>
           </div>
           <div class="info_box">
-            <span v-text="item.user_name"></span>
-            <p v-text="item.memo"></p>
+            <span v-text="item.user_name" v-if="item.fuid == user_id"></span>
+            <span v-text="item.ut_user_name" v-else></span>
+            <p v-text="item.memo" v-if="item.fuid == user_id"></p>
+            <p v-else>已发送验证消息</p>
           </div>
           <div class="info_botton">
-            <span v-if="item.status == 0" @click.stop="applyDeal(item,1)" class="botton_color">接受</span>
+            <span v-if="item.status == 0 && item.fuid == user_id" @click.stop="applyDeal(item,1)" class="botton_color">接受</span>
+            <span v-else-if="item.status == 0 && item.fuid != user_id">待验证</span>
             <span v-else-if="item.status == 1">已接受</span>
             <span v-else-if="item.status == 2">已拒绝</span>
           </div>
@@ -38,8 +44,9 @@ export default {
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
+      user_id: this.Global.user_id,
       findUserText: '',
-      findApplyList: [],
+      findApplyList: {},
       findUserInfo: {},
     }
   },
@@ -49,90 +56,52 @@ export default {
       router.push({path:'/'+url,query:data});
     },
     checkUserInfo:function (user,type) {
-        console.log(user)
         this.findUserInfo=user
         this.findUserInfo.type = type
-        this.userInfoLeft = 0
+        this.findUserInfo.user_id = this.findUserInfo.id
+        this.handleRouter('info',this.findUserInfo)
     },//查看用户
     applyDeal:function (item,type) {
-        var msg = layer.load(2, {time: 10*1000}); //又换了种风格，并且设定最长等待10秒
-        $.ajax({
-            type:"POST",
-            url:"/index/apply/applyDeal",
-            data:{id:item.id,type:type},
-            error: function() {
-//                window.location.reload();
-            },
-            success: function(result){
-                layer.close(msg);
-                if(result.status == 0){
-                    item.status = type
-                    layer.msg('添加成功')
-                }else if(result.status == 1000){
-                    item.status = 1
-                    layer.msg('已经是好友啦')
-                }else{
-                    layer.msg('添加失败')
-                }
+      this.$http.post('http://192.168.2.52:333/index/apply/applyDeal', {id:item.id,type:type},{emulateJSON:true}).then(msg => {
+          console.log(msg);
+          if (msg.body.status == 0) {
+            if(type ==1){
+              alert('添加成功')
+            }else{
+              alert('已拒绝')
             }
-        });
+            item.status = type
+          }else if(msg.body.status == 1000){
+            item.status = 1
+            alert('已经是好友啦')
+          }else{
+            alert('添加失败')
+          }
+        }, response => {
+          console.log('error', response)
+        })
     },//好友申请处理
     appayList:function () {
       var _this = this
-      if(this.findUserLeft == 100){
-          this.findUserLeft = 0
-          var msg = layer.load(2, {time: 10*1000}); //又换了种风格，并且设定最长等待10秒
-          $.ajax({
-              type:"POST",
-              url:"/index/apply/applyList",
-              data:{},
-              error: function() {
-//                window.location.reload();
-              },
-              success: function(result){
-                  layer.close(msg);
-                  if(result.status == 0){
-                      _this.findApplyList.wCount = result.data.w_count;
-                      _this.findApplyList.list = result.data.list;
-                  }else{
-                      layer.msg('添加失败')
-                  }
-              }
-          });
-      }else{
-          this.findUserLeft = 100
-      }
+      this.$http.post('http://192.168.2.52:333/index/apply/applyList', {'user_id':this.Global.user_id},{emulateJSON:true}).then(msg => {
+          console.log(msg);
+          if (msg.body.status == 0) {
+            _this.findApplyList = msg.body.data.list;
+          }else{
+            alert(msg.body.msg, 'error');
+          }
+        }, response => {
+          console.log('error', response)
+        })
     },//好友申请列表
-    addApply:function () {
-        var _this = this
-        var msg = layer.load(2, {time: 10*1000}); //又换了种风格，并且设定最长等待10秒
-        $.ajax({
-            type:"POST",
-            url:"/index/apply/addApply",
-            data:{'f_user_id':_this.findUserInfo.id},
-            error: function() {
-//                window.location.reload();
-            },
-            success: function(result){
-                layer.close(msg);
-                if(result.status == 0){
-                    layer.msg('申请成功')
-                    _this.userInfoLeft = 100
-                }else{
-                    layer.msg('申请失败')
-                }
-            }
-        });
-    },//申请添加好友
     findUser:function () {
         var _this = this
         this.$http.post('http://192.168.2.52:333/index/user/getUserInfo', {user_id:this.Global.user_id,'username':this.findUserText},{emulateJSON:true}).then(msg => {
           if (msg.body.status == 0) {
-            _this.findUserInfo = msg.body.data
-            _this.findUserInfo.type=1
-            _this.handleRouter('info',_this.findUserInfo)
+            msg.body.data.user_id = msg.body.data.id
+            _this.checkUserInfo(msg.body.data,1);
           }else{
-            this.$messagebox.alert(msg.body.msg, 'error');
+            alert('用户不存在');
           }
         }, response => {
           console.log('error', response)
@@ -140,6 +109,7 @@ export default {
     },//好友信息
   },
   mounted(){
+    this.appayList();
   },
   updated(){
     console.log(22)
@@ -222,8 +192,22 @@ export default {
     color: #fff !important;
     background: #15c139 !important;
 }
+#findUser .applyList .img_box{
+      display: inline-block;
+    height: 100%;
+    margin: 0 0.5rem;
+}
 #findUser .applyList .info_box{
     width: calc(100vw - 2.5rem - 3rem);
+    display: inline-block;
+    vertical-align: top;
+}
+#findUser .applyList .info_box span{
+    display: inline-block;
+    margin: 0.3rem 0;
+}
+#findUser .applyList .info_box p{
+      color: #999;
 }
 #findUser .applyList p{
     overflow: hidden;

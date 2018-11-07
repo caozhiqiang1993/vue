@@ -1,0 +1,78 @@
+#userInfo{
+    position: absolute;
+    top:0;
+    z-index: 2;
+    background: #eee;
+    transition: 0.3s;
+    width: 100%;
+    height:100vh;
+}
+.userInfoHeader{
+    width:100%;
+    height: 2.2rem;
+    line-height: 2.2rem;
+    background: #36373C;
+}
+.userInfoHeader i{
+    color: #fff;
+    font-size: 1rem;
+    margin-left: 0.5rem;
+}
+.userInfoHeader span{
+    color: #fff;
+    vertical-align: top;
+    font-size:0.7rem;
+}
+
+#userInfo .userImgName{
+    width:100%;
+    margin-top: 0.8rem;
+    height:3.3rem;
+    /*line-height:3.3rem;*/
+    background: #fff;
+}
+#userInfo .userInfoImg{
+    display: inline-block;
+    height: 100%;
+    line-height: 3.3rem;
+    margin:0 0.8rem;
+}
+#userInfo .userInfoImg img{
+    width:2rem;
+    height:2rem;
+    vertical-align: middle;
+}
+#userInfo .userInfoName{
+    display: inline-block;
+    height: 100%;
+    margin-top:0.5rem;
+    vertical-align: top;
+}
+#userInfo .addUser{
+    width:100%;
+    height: 1.8rem;
+    margin-top: 1rem;
+}
+#userInfo .addUserButton{
+    width:94%;
+    height: 100%;
+    background: #15c139;
+    margin: auto;
+    border-radius: 0.1rem;
+    color: #fff;
+    text-align: center;
+    line-height: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.rejectButton{
+    background: #fff !important;
+    color:#000 !important;
+}
+
+.floarLeft{
+    float: left;
+}
+.floarRight{
+    float: right;
+}

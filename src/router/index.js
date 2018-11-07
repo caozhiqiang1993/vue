@@ -5,6 +5,7 @@ import Message from '@/components/Message'
 import Login from '@/components/Login'
 import FindUser from '@/components/FindUser'
 import UserInfo from '@/components/UserInfo'
+import User from '@/components/User'
 
 
 Vue.use(Router)
@@ -40,6 +41,12 @@ export default new Router({
       name: 'UserInfo',
       component: UserInfo,
       meta:{auth:true,index:2}
+    },
+    {
+      path: '/user',
+      name: 'User',
+      component: User,
+      meta:{auth:true,index:1}
     }
   ]
 })
