@@ -44,7 +44,7 @@ export default {
 	methods: {
 		loginSubmit() {
 			console.log(this.username)
-			this.$http.post('http://192.168.2.52:333/index/login/login', {username: this.username,userpsd: this.userpsd},{emulateJSON:true}).then(msg => {
+			this.$http.post(this.Global.apiUrl+'/index/login/login', {username: this.username,userpsd: this.userpsd},{emulateJSON:true}).then(msg => {
 				if (msg.body.status == 0) {
 					this.storage.set('key',msg.body.data)
 					this.storage.set('user_id',msg.body.data)

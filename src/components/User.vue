@@ -60,7 +60,7 @@ export default {
       var _this = this
       var formData = {};
       formData.explain = this.friendsList[this.user_id].explain;
-      _this.$http.post('http://192.168.2.52:333/index/user/editUserInfo', formData,{emulateJSON:true}).then(msg => {
+      _this.$http.post(this.Global.apiUrl+'/index/user/editUserInfo', formData,{emulateJSON:true}).then(msg => {
         console.log(msg);
         if (msg.body.status == 0) {
 
@@ -81,7 +81,7 @@ export default {
         i_image.onload = function () {
             var fordate = new FormData();
             fordate.append('img', fils);
-            _this.$http.post('http://192.168.2.52:333/index/user/uploadImg', fordate,{emulateJSON:true}).then(msg => {
+            _this.$http.post(this.Global.apiUrl+'/index/user/uploadImg', fordate,{emulateJSON:true}).then(msg => {
               console.log(msg);
               if (msg.body.status == 0) {
                 _this.friendsList[_this.user_id].img = data.data

@@ -62,7 +62,7 @@ export default {
         this.handleRouter('info',this.findUserInfo)
     },//查看用户
     applyDeal:function (item,type) {
-      this.$http.post('http://192.168.2.52:333/index/apply/applyDeal', {id:item.id,type:type},{emulateJSON:true}).then(msg => {
+      this.$http.post(this.Global.apiUrl+'/index/apply/applyDeal', {id:item.id,type:type},{emulateJSON:true}).then(msg => {
           console.log(msg);
           if (msg.body.status == 0) {
             if(type ==1){
@@ -83,7 +83,7 @@ export default {
     },//好友申请处理
     appayList:function () {
       var _this = this
-      this.$http.post('http://192.168.2.52:333/index/apply/applyList', {'user_id':this.Global.user_id},{emulateJSON:true}).then(msg => {
+      this.$http.post(this.Global.apiUrl+'/index/apply/applyList', {'user_id':this.Global.user_id},{emulateJSON:true}).then(msg => {
           console.log(msg);
           if (msg.body.status == 0) {
             _this.findApplyList = msg.body.data.list;
@@ -96,7 +96,7 @@ export default {
     },//好友申请列表
     findUser:function () {
         var _this = this
-        this.$http.post('http://192.168.2.52:333/index/user/getUserInfo', {user_id:this.Global.user_id,'username':this.findUserText},{emulateJSON:true}).then(msg => {
+        this.$http.post(this.Global.apiUrl+'/index/user/getUserInfo', {user_id:this.Global.user_id,'username':this.findUserText},{emulateJSON:true}).then(msg => {
           if (msg.body.status == 0) {
             msg.body.data.user_id = msg.body.data.id
             _this.checkUserInfo(msg.body.data,1);

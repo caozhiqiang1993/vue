@@ -67,7 +67,7 @@ export default {
     },//查看用户
     addApply:function () {
         var _this = this
-        this.$http.post('http://192.168.2.52:333/index/apply/addApply', {'f_user_id':this.findUserInfo.id},{emulateJSON:true}).then(msg => {
+        this.$http.post(this.Global.apiUrl+'/index/apply/addApply', {'f_user_id':this.findUserInfo.id},{emulateJSON:true}).then(msg => {
           console.log(msg);
           if (msg.body.status == 0) {
             alert('申请成功')

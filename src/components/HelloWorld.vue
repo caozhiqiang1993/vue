@@ -231,7 +231,7 @@ export default {
     }, //处理分组好友
     userFriend:function () {
         var _this = this
-        this.$http.post('http://192.168.2.52:333/index/friend/getFriend', {user_id: this.user_id},{emulateJSON:true}).then(msg => {
+        this.$http.post(this.Global.apiUrl+'/index/friend/getFriend', {user_id: this.user_id},{emulateJSON:true}).then(msg => {
           console.log(msg);
           if (msg.body.status == 0) {
             for(var i=0;i<msg.body.data.grouping.length;i++){
