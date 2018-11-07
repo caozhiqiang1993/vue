@@ -13,7 +13,7 @@
             </div>
             <div class="floarRight">
               <img :src="friendsList[user_id].img" alt="">
-              <input type="file" name="img" class="touxiang" @change="uploadImg(event)">
+              <input type="file" name="img" class="touxiang" @change="uploadImg($event)">
             </div>
           </li>
           <li>
@@ -81,10 +81,10 @@ export default {
         i_image.onload = function () {
             var fordate = new FormData();
             fordate.append('img', fils);
-            _this.$http.post(this.Global.apiUrl+'/index/user/uploadImg', fordate,{emulateJSON:true}).then(msg => {
+            _this.$http.post(_this.Global.apiUrl+'/index/user/uploadImg', fordate,{emulateJSON:true}).then(msg => {
               console.log(msg);
               if (msg.body.status == 0) {
-                _this.friendsList[_this.user_id].img = data.data
+                _this.friendsList[_this.user_id].img = msg.body.data
               }else{
                 alert(msg.body.msg, 'error');
               }
