@@ -31,38 +31,68 @@ var socket = {
 	},
 	onmessage:function(e){
         var data = eval("("+e.data+")");
+        var time =  (new Date()).getTime();
         console.log(e.data);
         if(data.type == 'login'){
-        	/*var users = [];
-        	var info = {}
-            var n = 0;
-        	for(var i=0;i<data.data.length;i++){
-            	if(socket.vue.user_id != data.data[i].user_id){
-                    info = {
-                        name:data.data[i].user_name,
-                        img:'http://tva1.sinaimg.cn/crop.0.0.118.118.180/5db11ff4gw1e77d3nqrv8j203b03cweg.jpg',
-                        msg:'您好',
-                        user_id:data.data[i].user_id,
-                    }
-                    users[n] = info
-                    n++
-				}
-			}
-            socket.vue.msgInfo = users*/
+
         }else if(data.type == 'msg'){
             var msg = {
                 user_id:data.uid,
                 f_user_id:data.fuid,
-                user_name:socket.vue.friendsList[data.uid].user_name,
-                img:socket.vue.friendsList[data.uid].img,
+                // user_name:socket.vue.friendsList[data.uid].user_name,
+                // img:socket.vue.friendsList[data.uid].img,
                 msg:data.info
             }
-            if(socket.vue.userAllMsg[data.uid] == undefined){
-                socket.vue.$set(socket.vue.userAllMsg, data.uid, [])
-                // socket.vue.userAllMsg[data.uid] = []
+            if(socket.vue.userAllMsg.charlog[data.uid] == undefined){
+                socket.vue.$set(socket.vue.userAllMsg.charlog, data.uid, [])
             }
-            socket.vue.userAllMsg[data.uid].push(msg)
-		}
+            socket.vue.userAllMsg.charlog[data.uid].push(msg)
+
+            var num = 0;
+            if(socket.vue.$router.currentRoute.path != '/msg' || socket.vue.$refs.chile.msgTitle.user_id != data.uid){
+                if(socket.vue.userAllMsg.history[data.uid] != undefined){
+                  num = socket.vue.userAllMsg.history[data.uid].num
+                }
+                num++
+            }
+            socket.vue.userAllMsg.history[data.uid] = {
+              msg:data.info,
+              time: time,
+              fuid: data.uid,
+              num: num,
+            }
+            socket.vue.storage.set(socket.vue.user_id+'-allMsg',JSON.stringify(socket.vue.userAllMsg));
+		}else if(data.type == 'addUser'){
+            if(socket.vue.friendsList[data.user.user_id] == undefined){
+                socket.vue.$set(socket.vue.friendsList, data.user.user_id, data.user)
+                socket.vue.dealGroupingFriend();
+                if(data.msg != undefined){
+                    var msg = {
+                        user_id:data.msg.uid,
+                        f_user_id:data.msg.fuid,
+                        // user_name:socket.vue.friendsList[data.msg.uid].user_name,
+                        // img:socket.vue.friendsList[data.msg.uid].img,
+                        msg:data.msg.info
+                    }
+                    if(socket.vue.userAllMsg.charlog[data.msg.fuid] == undefined){
+                        socket.vue.userAllMsg.charlog[data.msg.fuid] = []
+                    }
+                    socket.vue.userAllMsg.charlog[data.msg.fuid].push(msg)
+                    socket.vue.userAllMsg.history[data.msg.fuid] = {
+                      msg:data.msg.info,
+                      time: time,
+                      fuid: data.msg.fuid,
+                      num:0
+                    }
+                    socket.vue.storage.set(socket.vue.user_id+'-allMsg',JSON.stringify(socket.vue.userAllMsg));
+                    var data = '{"type":"msg","info":"'+data.msg.info+'","fuid":'+data.msg.fuid+',"uid":'+data.msg.uid+'}';
+                    socket.ws.send(data);
+                }
+            }
+        }else if(data.type == 'apply'){
+            socket.vue.$set(socket.vue.Global.friendsHeader[0],'num',1)
+        }
+        socket.vue.historySort()
 	}
 }
 

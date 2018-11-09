@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <transition :name="transitionName">
-      <router-view ref="chile" :contentkey="contentIndex" :userAllMsg="userAllMsg" :groupingFriendList="groupingFriendList" :friendsList="friendsList" @onuserid="onuser_id" @findUserApplyDeal="chileApplyDeal"></router-view>
+      <router-view ref="chile" :contentkey="contentIndex" :userAllMsg="userAllMsg" :userHistory="userHistory" :groupingFriendList="groupingFriendList" :friendsList="friendsList" @onuserid="onuser_id" @f_jsJbNum="jsJbNum" @findUserApplyDeal="chileApplyDeal"></router-view>
     </transition>
   </div>
 </template>
@@ -80,6 +80,8 @@ export default {
           },*/
       ],
       userAllMsg:{
+        charlog:{},
+        history:{}
           /*'2':[
               {
                   user_id:1,
@@ -89,6 +91,7 @@ export default {
               }
           ]*/
       }, //用户所有的聊天记录
+      userHistory:[]
     }
   },
   methods:{
@@ -170,6 +173,12 @@ export default {
             _this.friendsList = msg.body.data.friend
             _this.groupingList = msg.body.data.grouping
             _this.dealGroupingFriend()
+            //获取聊天记录
+            var userAllmsg = this.storage.get(this.user_id+'-allMsg')
+            if(userAllmsg != "undefined" && userAllmsg){
+              this.userAllMsg = JSON.parse(userAllmsg);
+              this.historySort()
+            }
           }else{
             this.$messagebox.alert(msg.body.msg, 'error');
           }
@@ -182,6 +191,39 @@ export default {
     },
     chileApplyDeal(item,type){
       this.$refs.chile.applyDeal(item,type)
+    },
+    historySort(){
+      var obj = this.userAllMsg.history
+      var history = [];
+      var num = 0;
+      for (var i in obj) {
+          num += obj[i].num
+          history.push(obj[i]);
+      }
+      history.sort(function (obj1, obj2) {
+          var val1 = obj1.time;
+          var val2 = obj2.time;
+          if (val1 < val2) {
+              return 1;
+          } else if (val1 > val2) {
+              return -1;
+          } else {
+              return 0;
+          }
+      })
+      this.userHistory = history
+      if(this.$refs.chile.footerInfo != undefined){
+        this.$set(this.$refs.chile.footerInfo[0],'num',num)
+      }
+    },
+    jsJbNum(){
+      var num = 0;
+      if(this.userAllMsg.history != undefined){
+        for(var k in this.userAllMsg.history){
+          num += this.userAllMsg.history[k].num
+        }
+        this.Global.footerInfo[0].num = num
+      }
     }
   },
   mounted(){
@@ -207,6 +249,13 @@ export default {
     user_id(){
         this.socket.connectSocket(this)
         this.userFriend() //获取好友
+    },
+    userAllMsg:{
+      handler(newVal, oldVal){
+          this.historySort()
+          // this.jsJbNum()
+      },
+      deep:true
     }
   }
 }

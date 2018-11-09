@@ -15,13 +15,11 @@
         <li v-for="item in findApplyList" @click="checkUserInfo(item,2)">
           <div class="img_box">
             <span>
-              <img :src="item.img" v-if="item.fuid == user_id">
-              <img :src="item.ut_img" v-else>
+              <img :src="item.img">
             </span>
           </div>
           <div class="info_box">
-            <span v-text="item.user_name" v-if="item.fuid == user_id"></span>
-            <span v-text="item.ut_user_name" v-else></span>
+            <span v-text="item.user_name"></span>
             <p v-text="item.memo" v-if="item.fuid == user_id"></p>
             <p v-else>已发送验证消息</p>
           </div>
@@ -57,8 +55,11 @@ export default {
     },
     checkUserInfo:function (user,type) {
         this.findUserInfo=user
+        if(type == 2 && user.fuid != this.user_id){
+          type = 1
+        }
         this.findUserInfo.type = type
-        this.findUserInfo.user_id = this.findUserInfo.id
+        // this.findUserInfo.user_id = this.findUserInfo.id
         this.handleRouter('info',this.findUserInfo)
     },//查看用户
     applyDeal:function (item,type) {
@@ -84,7 +85,6 @@ export default {
     appayList:function () {
       var _this = this
       this.$http.post(this.Global.apiUrl+'/index/apply/applyList', {'user_id':this.Global.user_id},{emulateJSON:true}).then(msg => {
-          console.log(msg);
           if (msg.body.status == 0) {
             _this.findApplyList = msg.body.data.list;
           }else{
@@ -112,7 +112,6 @@ export default {
     this.appayList();
   },
   updated(){
-    console.log(22)
 
   }
 }

@@ -13,7 +13,7 @@
       </div>
     </div>
     <div class="addUser">
-      <template v-if="friendsList[findUserInfo.user_id] == undefined">
+      <template v-if="findUserInfo.type == 1 && friendsList[findUserInfo.user_id] == undefined">
         <div class="addUserButton" @click="addApply()">
           添加好友
         </div>
@@ -72,6 +72,8 @@ export default {
           if (msg.body.status == 0) {
             alert('申请成功')
             _this.handleRouter('find')
+          }else if(msg.body.status == 2){
+            alert('已经申请了，耐心等候')
           }else{
             this.$messagebox.alert(msg.body.msg, 'error');
           }

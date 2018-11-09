@@ -3,17 +3,17 @@
 
 		<div class="L_enter">
 			<p class="l_same_P">
-				<input type="text" placeholder="EMAIL" v-model="username">
+				<input type="text" placeholder="手机号" v-model="username">
 			</p>
 			<p class="l_same_P">
-				<input type="password" placeholder="PASSWORD" v-model="userpsd">
+				<input type="password" placeholder="密码" v-model="userpsd">
 			</p>
 			<div class="loginBtn" @click="loginSubmit">
 				LOGIN
 			</div>
 			<div class="rORf">
-				<span><router-link to="/registe">REGISTER HERE</router-link></span>
-				<span><router-link to="/forget">FORGET PASSWORD</router-link></span>
+				<span><router-link to="/registe">注册</router-link></span>
+				<span><router-link to="/forget">忘记密码</router-link></span>
 			</div>
 			<p class="l_same_P l_same_OR">
 				<span class="span_or">OR</span>
@@ -74,6 +74,9 @@ export default {
 	min-height: calc(100vh + 1px);
 	background: #0094da;
 	padding: 0 2rem;
+}
+.L_enter{
+	padding-top: 5rem;
 }
 
 .L_enter input::-webkit-input-placeholder{

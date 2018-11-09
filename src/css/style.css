@@ -1,0 +1,17 @@
+.jiaobiao{
+    position: absolute;
+    background: red;
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    top: 1.2rem;
+    right:0.8rem;
+    color:#fff;
+     line-height: 0.7rem;
+    text-align: center;
+     font-size: 10px;
+}
+.xiaojiaobiao{
+    width: 0.4rem;
+    height: 0.4rem;
+}

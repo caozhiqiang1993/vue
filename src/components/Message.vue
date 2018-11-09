@@ -34,8 +34,8 @@
         </div>
         <div class="more_function">
           <span class="iconfont icon-smile biaoqing" @click="isShowEmoji=!isShowEmoji"></span>
-          <span class="iconfont icon-tupian"></span>
-          <span class="iconfont icon-iconset0196"></span>
+          <!-- <span class="iconfont icon-tupian"></span> -->
+          <!-- <span class="iconfont icon-iconset0196"></span> -->
         </div>
         <div id="biaoqing" v-show="isShowEmoji">
           <table>
@@ -87,33 +87,46 @@ export default {
         this.isShowEmoji = 0
     },
     editMessage:function () {
-      this.$nextTick(() => {
-          var container = this.$el.querySelector("#message .msg_info");
-          container.scrollTop = container.scrollHeight;
-      })
+      var _this =this
+      setTimeout(function(){
+        _this.$nextTick(() => {
+            var container = _this.$el.querySelector("#message .msg_info");
+            container.scrollTop = container.scrollHeight;
+        })
+      },300)
     },
     senMessage:function () {
+        var time =  (new Date()).getTime();
         var data = '{"type":"msg","info":"'+this.Message+'","fuid":'+this.msgTitle.user_id+',"uid":'+this.user_id+'}';
         this.socket.ws.send(data);
         var msg = {
             user_id:this.user_id,
             f_user_id:this.msgTitle.user_id,
-            user_name:this.friendsList[this.user_id].user_name,
-            img:this.friendsList[this.user_id].img,
+            // user_name:this.friendsList[this.user_id].user_name,
+            // img:this.friendsList[this.user_id].img,
             msg:this.Message
         }
-        if(this.userAllMsg[this.msgTitle.user_id] == undefined){
-            this.userAllMsg[this.msgTitle.user_id] = []
-            this.userMsg = this.userAllMsg[this.msgTitle.user_id]
+        if(this.userAllMsg.charlog[this.msgTitle.user_id] == undefined){
+            this.userAllMsg.charlog[this.msgTitle.user_id] = []
+            this.userMsg = this.userAllMsg.charlog[this.msgTitle.user_id]
         }
-        this.userAllMsg[this.msgTitle.user_id].push(msg)
+        this.userAllMsg.charlog[this.msgTitle.user_id].push(msg)
+        this.$set(this.userAllMsg.history,this.msgTitle.user_id,{
+          msg:this.Message,
+          time: time,
+          fuid: this.msgTitle.user_id,
+          num: 0,
+        })
         this.Message = ''
+        this.storage.set(this.user_id+'-allMsg',JSON.stringify(this.userAllMsg));
     },//发送消息
   },
   mounted(){
     if(this.Global.msg_friend > 0){
       this.msgTitle = this.friendsList[this.Global.msg_friend]
-      this.userMsg = this.userAllMsg[this.msgTitle.user_id]
+      if(this.userAllMsg.charlog[this.msgTitle.user_id] != undefined){
+        this.userMsg = this.userAllMsg.charlog[this.msgTitle.user_id]
+      }
     }else{
       router.push({path:'/'});
     }

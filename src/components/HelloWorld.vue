@@ -13,13 +13,14 @@
       <!-- 聊天记录列表start -->
       <div id="chat_log" v-show="contentIndex == 0">
         <ul>
-            <li v-for="item,key in userAllMsg" @click="sendMsg(key)">
+            <li v-for="item,key in userHistory" v-if="friendsList[item.fuid] != undefined" @click="sendMsg(item)">
               <div class="img_box">
-                <span><img :src="friendsList[key].img"></span>
+                <span><img :src="friendsList[item.fuid].img"></span>
+                <div class="jiaobiao" v-show="item.num > 0" v-text="item.num"></div>
               </div>
               <div class="info_box">
-                <span v-text="friendsList[key].user_name"></span>
-                <p v-text="item.length > 0 ? item[item.length - 1].msg : ''"></p>
+                <span v-text="friendsList[item.fuid].user_name"></span>
+                <p v-text="item.msg"></p>
               </div>
             </li>
         </ul>
@@ -36,6 +37,7 @@
               </div>
               <div class="fh_text">
                 <span v-text="item.text"></span>
+                <div v-show="item.num > 0" class="jiaobiao xiaojiaobiao"></div>
               </div>
             </li>
             <li v-else>
@@ -61,13 +63,17 @@
             </h5>
             <ul class="friends_info" v-show="item.show">
               <template v-for="user,key in item.users">
-                <li v-show="user.user_id != user_id" @click="handleRouter('info',user)">
+                <li v-show="user.user_id != user_id" @click="handleRouter('info',user)" :class="{'gray':user.isOnline==0}">
                   <div class="friends_img_box">
                     <span><img :src="user.img"></span>
                   </div>
                   <div class="friends_info_box">
                     <span v-text="user.user_name"></span>
-                    <p v-text="user.explain"></p>
+                    <p>
+                      <template v-if="user.isOnline == 1">[在线]</template>
+                      <template v-else>[离线]</template>
+                      {{user.explain}}
+                    </p>
                   </div>
                 </li>
               </template>
@@ -112,6 +118,8 @@
         <li v-for="(item,index) in footerInfo" @click="contentIndex = index" :class="{active : contentIndex == index}">
           <p><i :class="[item.iconName,{reversal : index == 0}]" class="icon"></i></p>
           <span v-text="item.text"></span>
+          <div class="jiaobiao" v-if="index == 0" v-show="item.num > 0" v-text="item.num"></div>
+          <div class="jiaobiao xiaojiaobiao" v-else v-show="item.num > 0"></div>
         </li>
       </ul>
     </div>
@@ -125,7 +133,7 @@
 import findUser from './FindUser.vue'
 export default {
   name: 'HelloWorld',
-  props: ['contentkey','groupingFriendList','userAllMsg','friendsList'],
+  props: ['contentkey','groupingFriendList','userAllMsg','friendsList','groupingList','userHistory'],
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
@@ -133,44 +141,9 @@ export default {
       contentIndex: this.Global.contentIndex,
       user_id: this.Global.user_id,
       user_name: 'test',
-      footerInfo:[
-          {
-              text:'消息',
-              iconName:'iconfont icon-cc-message'
-          },
-          {
-              text:'联系人',
-              iconName:'iconfont icon-user'
-          },
-          {
-              text:'更多',
-              iconName:'iconfont icon-more'
-          }
-      ],
-      friendsHeader:[
-          {
-              text:'新的朋友',
-              iconName:'iconfont icon-plus'
-          },
-          {
-              text:'群聊',
-              iconName:'iconfont icon-users'
-          }
-      ],
-      more:[
-          {
-              icon:'iconfont icon-shezhi',
-              name:'设置'
-          },
-          {
-              icon:'iconfont icon-find',
-              name:'分享'
-          },
-          {
-              icon:'iconfont icon-iconset0103',
-              name:'关于'
-          },
-      ],
+      footerInfo:this.Global.footerInfo,
+      friendsHeader:this.Global.friendsHeader,
+      more:this.Global.more,
       websock:null,
     }
   },
@@ -181,11 +154,17 @@ export default {
     handleChild:function(name){
       this.$refs.findUser.parentHandleclick("嘿嘿嘿");
     },
-    sendMsg(user_id){
-      this.Global.msg_friend = user_id
+    sendMsg(item){
+      this.userAllMsg.history[item.fuid].num = 0
+      this.storage.set(this.user_id+'-allMsg',JSON.stringify(this.userAllMsg));
+      this.Global.msg_friend = item.fuid
       router.push({path:'/msg'});
     },
     handleRouter(url,data){
+      if(url == 'find'){
+        this.$set(this.Global.friendsHeader[0],'num',0)
+        this.jsjiaobiao();
+      }
       router.push({path:'/'+url,query:data});
     },
     threadPoxi(){  // 实际调用的方法
@@ -246,14 +225,27 @@ export default {
         }, response => {
           console.log('error', response)
         })
+    },
+    jsjiaobiao(){
+      var num = 0;
+      num += this.friendsHeader[0].num
+      this.$set(this.Global.footerInfo[1],'num',num)
     }
   },
   mounted() {
-
+    this.$emit('f_jsJbNum')
+  },
+  created:function () {
   },
   watch:{
     contentIndex(){
       this.Global.contentIndex = this.contentIndex
+    },
+    friendsHeader:{
+      handler(newVal, oldVal){
+          this.jsjiaobiao()
+      },
+      deep:true
     }
   }
 
@@ -262,6 +254,11 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.gray{
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+}
+
 .hello{
   height: 100%;
   position: relative;
@@ -300,6 +297,7 @@ export default {
   #chat_log ul li{
     height: 2.5rem;
     border-bottom: 1px solid #f2f2f2;
+    position: relative;
   }
   .img_box{
     height: 100%;
@@ -330,7 +328,7 @@ export default {
   #chat_log ul li img,.friends_info li img{
     width: 1.5rem;
     height: 1.5rem;
-    border-radius: 50%;
+    /*border-radius: 50%;*/
   }
 
   #footer{
@@ -346,6 +344,11 @@ export default {
     text-align: center;
     float: left;
     color: #666;
+    position: relative;
+  }
+  #footer ul li .jiaobiao{
+    top: 0;
+    left: 3rem;
   }
   #footer ul li i{
     font-size: 1.1rem;
@@ -369,6 +372,11 @@ export default {
   }
   #friends .fh_text{
     margin-left: 1.9rem;
+    position: relative;
+  }
+  #friends .fh_text .jiaobiao{
+    left: 3rem;
+    top: 0.6rem;
   }
   #friends ul li i{
     font-size: 1rem;

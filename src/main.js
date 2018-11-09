@@ -35,7 +35,7 @@ Vue.prototype.http = axios*/
 // Vue.use(MintUI)
 
 // Vue.prototype.MintUI = MintUI;
-
+import './css/style.css'
 if(storage.get('user_id') != "undefined" && storage.get('user_id')){
   Global.user_id = storage.get('user_id')
 }
