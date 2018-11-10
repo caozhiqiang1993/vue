@@ -3,7 +3,7 @@
 
 		<div class="L_enter">
 			<p class="l_same_P">
-				<input type="text" placeholder="手机号" v-model="username">
+				<input type="text" placeholder="用户名" v-model="username">
 			</p>
 			<p class="l_same_P">
 				<input type="password" placeholder="密码" v-model="userpsd">
@@ -43,7 +43,6 @@ export default {
 	props: ['groupingFriendList'],
 	methods: {
 		loginSubmit() {
-			console.log(this.username)
 			this.$http.post(this.Global.apiUrl+'/index/login/login', {username: this.username,userpsd: this.userpsd},{emulateJSON:true}).then(msg => {
 				if (msg.body.status == 0) {
 					this.storage.set('key',msg.body.data)
@@ -51,8 +50,8 @@ export default {
 					this.Global.user_id = msg.body.data
 					this.$emit("onuserid",msg.body.data);
 					router.push({path:'/'})
-				}else{
-					this.$messagebox.alert(msg.body.msg, 'error');
+				}else if(msg.body.status == 2){
+					alert('账号密码错误', 'error');
 				}
 			}, response => {
 				console.log('error', response)

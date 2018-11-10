@@ -150,18 +150,15 @@ export default {
     },
     dealGroupingFriend() {
         var data =[]
-      for(var i in this.groupingList){
-          data[i] = this.groupingList[i]
-          data[i].show = false
-          data[i].users = []
+      for(var i in this.groupingFriendList){
+          this.groupingFriendList[i].users = []
           for(var j in this.friendsList){
-              if(this.groupingList[i].id == this.friendsList[j].grouping && this.friendsList[j].id != this.user_id){
-                  data[i].users.push(this.friendsList[j])
+              if(this.groupingFriendList[i].id == this.friendsList[j].grouping && this.friendsList[j].id != this.user_id){
+                  this.groupingFriendList[i].users.push(this.friendsList[j])
               }
           }
-          data[i].num = data[i].users.length -1
+          this.groupingFriendList[i].num = this.groupingFriendList[i].users.length -1
       }
-        this.groupingFriendList = data
     }, //处理分组好友
     userFriend() {
         var _this = this
@@ -171,7 +168,7 @@ export default {
                 msg.body.data.grouping[i].show = false
             }
             _this.friendsList = msg.body.data.friend
-            _this.groupingList = msg.body.data.grouping
+            _this.groupingFriendList = msg.body.data.grouping
             _this.dealGroupingFriend()
             //获取聊天记录
             var userAllmsg = this.storage.get(this.user_id+'-allMsg')

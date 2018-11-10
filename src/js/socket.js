@@ -34,7 +34,12 @@ var socket = {
         var time =  (new Date()).getTime();
         console.log(e.data);
         if(data.type == 'login'){
-
+            if(data.isOnline == 0){
+                socket.vue.friendsList[data.uid].isOnline = 0
+            }else{
+                socket.vue.friendsList[data.uid].isOnline = 1
+            }
+            socket.vue.dealGroupingFriend();
         }else if(data.type == 'msg'){
             var msg = {
                 user_id:data.uid,
