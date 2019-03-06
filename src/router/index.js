@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import HelloWorld from '@/components/HelloWorld'
 import Message from '@/components/Message'
 import Login from '@/components/Login'
+import Reg from '@/components/Reg'
 import FindUser from '@/components/FindUser'
 import UserInfo from '@/components/UserInfo'
 import User from '@/components/User'
@@ -11,6 +12,7 @@ import User from '@/components/User'
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
@@ -28,7 +30,13 @@ export default new Router({
       path: '/login',
       name: 'Login',
       component: Login,
-      meta:{auth:false}
+      meta:{auth:false,index:-2}
+    },
+    {
+      path: '/reg',
+      name: 'Reg',
+      component: Reg,
+      meta:{auth:false,index:-1}
     },
     {
       path: '/find',

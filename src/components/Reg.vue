@@ -1,5 +1,5 @@
 <template>
-	<div  v-loading="loading" class="loginPage" ref="loginPage">
+	<div v-loading="loading" class="loginPage" ref="loginPage">
 		<div class="L_enter">
 			<p class="l_same_P">
 				<input type="text" placeholder="用户名" v-model="username">
@@ -8,19 +8,7 @@
 				<input type="password" placeholder="密码" v-model="userpsd">
 			</p>
 			<div class="loginBtn" @click="loginSubmit">
-				LOGIN
-			</div>
-			<div class="rORf">
-				<span><router-link to="/reg">注册</router-link></span>
-				<span><router-link to="/forget">忘记密码</router-link></span>
-			</div>
-			<p class="l_same_P l_same_OR">
-				<span class="span_or">OR</span>
-			</p>
-			<div class="l_third">
-				<img src="../assets/Facebook.png" alt="">
-				<img src="../assets/weixin.png" alt="">
-				<img src="../assets/Google.png" alt="">
+				注册
 			</div>
 		</div>
 	</div>
@@ -36,27 +24,39 @@ export default {
 		return {
 			username: '',
 			userpsd: '',
-			loading:false,
+			loading: false,
 			ws:{}
 		}
 	},
 	methods: {
 		loginSubmit() {
+			if(this.username == ''){
+				alert('用户名不能为空')
+				return false
+			}
+			if(this.userpsd == ''){
+				alert('密码不能为空')
+				return false
+			}
 			this.loading = true
-			this.$http.post(this.Global.apiUrl+'/index/login/login', {username: this.username,userpsd: this.userpsd},{emulateJSON:true}).then(msg => {
+			this.$http.post(this.Global.apiUrl+'/index/login/reg', {username: this.username,userpsd: this.userpsd},{emulateJSON:true}).then(msg => {
 				this.loading = false
-				console.log(msg.body.data)
 				if (msg.body.status == 0) {
-					this.storage.set('key',msg.body.data.key)
-					this.storage.set('user_id',msg.body.data.uid)
-					this.Global.user_id = msg.body.data.uid
-					this.$emit("onuserid",msg.body.data.uid);
+					this.storage.set('key',msg.body.data)
+					this.storage.set('user_id',msg.body.data)
+					this.Global.user_id = msg.body.data
+					this.$emit("onuserid",msg.body.data);
 					router.push({path:'/'})
 				}else if(msg.body.status == 2){
-					alert('账号密码错误', 'error');
+					this.$message({
+			          showClose: true,
+			          message: '账号已存在',
+			          type: 'warning',
+			          center:true
+			        })
+					// alert('账号已存在', 'error');
 				}
 			}, response => {
-				this.loading = false
 				console.log('error', response)
 			})
 		}

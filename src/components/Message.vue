@@ -11,19 +11,20 @@
     <div id="msg_content">
       <div class="msg_info" ref="msg_info" @click="isShowEmoji=0">
         <ul>
-          <li v-for="(item,index) in userMsg" class="" v-bind:class="{ 'msg_info_li_right': user_id == item.user_id}">
-            <div class="msg_user_info" v-bind:class="{ 'msg_user_info_right': user_id == item.user_id}">
-              <img :src="friendsList[item.user_id].img">
-              <span v-text="friendsList[item.user_id].user_name" class="" v-bind:class="{ 'msg_user_info_text_right': user_id == item.user_id}"></span>
-            </div>
-            <div class="msg_msg" v-bind:class="{ 'msg_msg_right': user_id == item.user_id}">
-              <p v-text="item.msg"></p>
-            </div>
-          </li>
-          <!--<li class="interval_time">
-            <span>07-07 14:28</span>
-          </li>-->
-
+          <template v-for="(item,index) in userMsg">
+            <li class="interval_time" v-if="index != 0 && (item.time - userMsg[index-1].time) > 150000">
+              <span v-text="intervalTime(item.time)">07-07 14:28</span>
+            </li>
+            <li class="" v-bind:class="{ 'msg_info_li_right': user_id == item.user_id}">
+              <div class="msg_user_info" v-bind:class="{ 'msg_user_info_right': user_id == item.user_id}">
+                <img :src="friendsList[item.user_id].img">
+                <span v-text="friendsList[item.user_id].user_name" class="" v-bind:class="{ 'msg_user_info_text_right': user_id == item.user_id}"></span>
+              </div>
+              <div class="msg_msg" v-bind:class="{ 'msg_msg_right': user_id == item.user_id}">
+                <p v-text="item.msg"></p>
+              </div>
+            </li>
+          </template>
         </ul>
       </div>
       <div class="input_box">
@@ -104,7 +105,8 @@ export default {
             f_user_id:this.msgTitle.user_id,
             // user_name:this.friendsList[this.user_id].user_name,
             // img:this.friendsList[this.user_id].img,
-            msg:this.Message
+            msg:this.Message,
+            time:time,
         }
         if(this.userAllMsg.charlog[this.msgTitle.user_id] == undefined){
             this.userAllMsg.charlog[this.msgTitle.user_id] = []
@@ -120,6 +122,20 @@ export default {
         this.Message = ''
         this.storage.set(this.user_id+'-allMsg',JSON.stringify(this.userAllMsg));
     },//发送消息
+    intervalTime:function(time) {
+      var nowtime =  (new Date()).getTime();
+      var gs = '';
+      var nowdate = this.commom.date('Y-m-d H:i',nowtime) 
+      var olddate = this.commom.date('Y-m-d H:i',time) 
+      if(nowdate.split(' ')[0].split('-')[0] != olddate.split(' ')[0].split('-')[0]){
+        gs = 'Y-m-d H:i'
+      }else if(nowdate.split(' ')[0] != olddate.split(' ')[0]){
+        gs = 'm-d H:i'
+      }else{
+        gs = 'H:i'
+      }
+      return this.commom.date(gs,time)
+    }
   },
   mounted(){
     if(this.Global.msg_friend > 0){
@@ -246,12 +262,12 @@ export default {
 }
 #msg_content .msg_info .interval_time span{
     padding: 0 0.7rem;
-    line-height: 1.45rem;
+    line-height: 0.8rem;
     display: inline-block;
     background: #ddd;
     border-radius: 3px;
     color: #fff;
-    font-size: 0.6rem
+    font-size: 0.5rem
 }
 .msg_msg:after {
     msg_content: '';

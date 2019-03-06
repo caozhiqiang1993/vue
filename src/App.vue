@@ -3,6 +3,7 @@
     <transition :name="transitionName">
       <router-view ref="chile" :contentkey="contentIndex" :userAllMsg="userAllMsg" :userHistory="userHistory" :groupingFriendList="groupingFriendList" :friendsList="friendsList" @onuserid="onuser_id" @f_jsJbNum="jsJbNum" @findUserApplyDeal="chileApplyDeal"></router-view>
     </transition>
+        <!-- radon global components -->
   </div>
 </template>
 
@@ -177,7 +178,7 @@ export default {
               this.historySort()
             }
           }else{
-            this.$messagebox.alert(msg.body.msg, 'error');
+            // alert(msg.body.msg, 'error');
           }
         }, response => {
           console.log('error', response)
@@ -225,7 +226,7 @@ export default {
   },
   mounted(){
     // this.slip(document.body,this);
-      if(this.user_id > 0){
+      if(this.storage.get('key') != undefined && this.storage.get('key') != '' && this.storage.get('key') != null){
         this.socket.connectSocket(this)
         this.userFriend() //获取好友
       }
@@ -267,7 +268,7 @@ export default {
 .slide-left-enter-active,
 .slide-left-leave-active {
   will-change: transform;
-  transition: all 500ms;
+  transition: linear .2s;
   position: absolute;
 }
 .slide-right-enter {

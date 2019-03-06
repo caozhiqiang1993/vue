@@ -1,5 +1,5 @@
 <template>
-  <div id="user">
+  <div id="user" v-loading="loading">
     <div class="userInfoHeader">
       <i class="iconfont icon-left" @click="handleRouter('')"></i>
       <span>个人信息</span>
@@ -30,8 +30,16 @@
             </div>
             <div class="floarRight">
               <p>
-                <input type="text"  v-model="friendsList[user_id].explain"  @blur="editUserInfo()">
+                <input type="text" v-if="friendsList[user_id].explain == ''" placeholder="还没留下信息呢" v-model="friendsList[user_id].explain"  @blur="editUserInfo()">
+                <input type="text" v-else v-model="friendsList[user_id].explain"  @blur="editUserInfo()">
               </p>
+            </div>
+          </li>
+          <li class="margin_top">
+            <div class="floarLeft">
+              <span>退出</span>
+            </div>
+            <div class="floarRight">
             </div>
           </li>
         </ul>
@@ -48,6 +56,7 @@ export default {
   data () {
     return {
       msg: 'Welcome to Your Vue.js App',
+      loading: false,
       user_id: this.Global.user_id
     }
   },
@@ -59,20 +68,22 @@ export default {
     editUserInfo:function () {
       var _this = this
       var formData = {};
+      this.loading = true
       formData.explain = this.friendsList[this.user_id].explain;
       _this.$http.post(this.Global.apiUrl+'/index/user/editUserInfo', formData,{emulateJSON:true}).then(msg => {
-        console.log(msg);
+        this.loading = false
         if (msg.body.status == 0) {
 
         }else{
-          alert(msg.body.msg, 'error');
+          console.log(msg.body.msg, 'error');
         }
       }, response => {
+        this.loading = false
         console.log('error', response)
       })
     }, //修改个人信息
     uploadImg:function (e) {
-      console.log(e)
+        this.loading = true
         var _this = this
         var fils = e.target.files["0"];
         if (fils.length == 0) return false
@@ -82,13 +93,14 @@ export default {
             var fordate = new FormData();
             fordate.append('img', fils);
             _this.$http.post(_this.Global.apiUrl+'/index/user/uploadImg', fordate,{emulateJSON:true}).then(msg => {
-              console.log(msg);
+              _this.loading = false
               if (msg.body.status == 0) {
                 _this.friendsList[_this.user_id].img = msg.body.data
               }else{
-                alert(msg.body.msg, 'error');
+                console.log(msg.body.msg, 'error');
               }
             }, response => {
+              _this.loading = false
               console.log('error', response)
             })
         }
@@ -110,6 +122,9 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.margin_top{
+  margin-top:0.8rem;
+}
 #user{
     position: absolute;
     top:0;
@@ -122,7 +137,6 @@ export default {
 
 .userInfoButtonBox{
     margin-top: 0.6rem;
-    background: #fff;
     position: relative;
 }
 .userInfoButtonBox .buttonLeft{
@@ -135,6 +149,7 @@ export default {
     height: 1.7rem;
     line-height: 1.7rem;
     border-top: 1px solid #eee;
+    background: #fff;
 }
 .userInfoButtonBox li:first-child{
     line-height: 3rem;

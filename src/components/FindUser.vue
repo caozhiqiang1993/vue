@@ -1,5 +1,5 @@
 <template>
-  <div id="findUser">
+  <div id="findUser" v-loading="loading_q">
     <div class="findUserHeader">
       <i class="iconfont icon-left" @click="handleRouter('')"></i>
       <span>添加好友</span>
@@ -10,7 +10,7 @@
     <div class="applyTest">
       <span>新的好友</span>
     </div>
-    <div class="applyList">
+    <div class="applyList" v-loading="loading">
       <ul>
         <li v-for="item in findApplyList" @click="checkUserInfo(item,2)">
           <div class="img_box">
@@ -46,6 +46,8 @@ export default {
       findUserText: '',
       findApplyList: {},
       findUserInfo: {},
+      loading: false,
+      loading_q: false,
     }
   },
   props:[''],
@@ -76,27 +78,32 @@ export default {
             item.status = 1
             alert('已经是好友啦')
           }else{
-            alert('添加失败')
+            console.log('添加失败')
           }
         }, response => {
           console.log('error', response)
         })
     },//好友申请处理
     appayList:function () {
+      this.loading = true
       var _this = this
       this.$http.post(this.Global.apiUrl+'/index/apply/applyList', {'user_id':this.Global.user_id},{emulateJSON:true}).then(msg => {
+          this.loading = false
           if (msg.body.status == 0) {
             _this.findApplyList = msg.body.data.list;
           }else{
-            alert(msg.body.msg, 'error');
+            console.log(msg.body.msg, 'error');
           }
         }, response => {
+          this.loading_q = false
           console.log('error', response)
         })
     },//好友申请列表
     findUser:function () {
+        this.loading_q = true
         var _this = this
         this.$http.post(this.Global.apiUrl+'/index/user/getUserInfo', {user_id:this.Global.user_id,'username':this.findUserText},{emulateJSON:true}).then(msg => {
+          this.loading_q = false
           if (msg.body.status == 0) {
             msg.body.data.user_id = msg.body.data.id
             _this.checkUserInfo(msg.body.data,1);
@@ -104,6 +111,7 @@ export default {
             alert('用户不存在');
           }
         }, response => {
+          this.loading_q = false
           console.log('error', response)
         })
     },//好友信息

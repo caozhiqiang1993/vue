@@ -20,7 +20,7 @@
               </div>
               <div class="info_box">
                 <span v-text="friendsList[item.fuid].user_name"></span>
-                <p v-text="item.msg"></p>
+                <p v-text="item.msg" class="oneRow"></p>
               </div>
             </li>
         </ul>
@@ -69,7 +69,7 @@
                   </div>
                   <div class="friends_info_box">
                     <span v-text="user.user_name"></span>
-                    <p>
+                    <p class="oneRow">
                       <template v-if="user.isOnline == 1">[在线]</template>
                       <template v-else>[离线]</template>
                       {{user.explain}}
@@ -316,6 +316,7 @@ export default {
     height: 100%;
     vertical-align: top;
     margin-top: 0.3rem;
+    max-width: 80%;
 
   }
   .info_box span{
@@ -429,6 +430,7 @@ export default {
    .friends_info_box{
     display: inline-block;
     vertical-align: top;
+    width:80%;
   }
   .friends_info_box p{
     color:#999;

@@ -11,7 +11,7 @@ var socket = {
 		// if(!window.localStorage.getItem('key')){
         socket.vue = vue;
 			// 创建websocket
-        socket.ws = new WebSocket("ws://192.168.2.52:7272");
+        socket.ws = new WebSocket("ws://139.159.180.10:9501");
 			// 当socket连接打开时，输入用户名
         socket.ws.onopen = this.onOpen
 			// 当有消息时根据消息类型显示不同信息
@@ -46,7 +46,8 @@ var socket = {
                 f_user_id:data.fuid,
                 // user_name:socket.vue.friendsList[data.uid].user_name,
                 // img:socket.vue.friendsList[data.uid].img,
-                msg:data.info
+                msg:data.info,
+                time:time
             }
             if(socket.vue.userAllMsg.charlog[data.uid] == undefined){
                 socket.vue.$set(socket.vue.userAllMsg.charlog, data.uid, [])
@@ -77,7 +78,8 @@ var socket = {
                         f_user_id:data.msg.fuid,
                         // user_name:socket.vue.friendsList[data.msg.uid].user_name,
                         // img:socket.vue.friendsList[data.msg.uid].img,
-                        msg:data.msg.info
+                        msg:data.msg.info,
+                        time:time
                     }
                     if(socket.vue.userAllMsg.charlog[data.msg.fuid] == undefined){
                         socket.vue.userAllMsg.charlog[data.msg.fuid] = []

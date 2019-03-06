@@ -26,6 +26,8 @@ Vue.prototype.socket=socket
 import Global from './components/Global.vue'
 Vue.prototype.Global=Global
 
+import commom from './js/common.js'
+Vue.prototype.commom=commom
 /*import axios from 'axios'
 Vue.prototype.http = axios*/
 
@@ -35,6 +37,11 @@ Vue.prototype.http = axios*/
 // Vue.use(MintUI)
 
 // Vue.prototype.MintUI = MintUI;
+
+import ElementUI from 'element-ui';
+import 'element-ui/lib/theme-chalk/index.css';
+Vue.use(ElementUI);
+
 import './css/style.css'
 if(storage.get('user_id') != "undefined" && storage.get('user_id')){
   Global.user_id = storage.get('user_id')
@@ -44,7 +51,7 @@ router.beforeEach((to, from, next) => {
   // console.log(from)
   //根据字段判断是否路由过滤
   if (to.meta.auth) {
-    if (storage.get('key') > 0) {
+    if (storage.get('key') > 0 || storage.get('key') != '') {
       if(from.path == '/msg' && to.path == '/'){
         Global.contentIndex = 0
       }
@@ -64,7 +71,12 @@ router.beforeEach((to, from, next) => {
 Vue.http.interceptors.push((request, next) => {
   request.headers.set('Authorization', storage.get('key')); //setting request.headers
     next((response) => {
-            return response
+      if(response.body.status == 10001){
+        storage.set('key','')
+        alert('登录过期')
+        router.push({path:'/login'})
+      }
+      return response
     })
 })
 Vue.prototype.msgName = '1';

@@ -2,7 +2,7 @@
 const contentIndex = 0
 const user_id = 0
 const msg_friend = 0
-const apiUrl = 'http://192.168.2.52:333/'
+const apiUrl = 'http://192.168.2.52:333'
 const footerInfo = [
 		{
 		  text:'消息',
@@ -45,6 +45,7 @@ const more = [
               name:'关于'
           },*/
       ]
+
 export default
 {
   contentIndex,
