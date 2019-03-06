@@ -52,7 +52,7 @@ router.beforeEach((to, from, next) => {
   //根据字段判断是否路由过滤
   if (to.meta.auth) {
     var token = storage.get('key')
-    if (token.length > 0 && token != '') {
+    if (token && token.length > 0 && token != '') {
       if(from.path == '/msg' && to.path == '/'){
         Global.contentIndex = 0
       }
