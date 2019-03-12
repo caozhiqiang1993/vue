@@ -17,11 +17,11 @@
 			<p class="l_same_P l_same_OR">
 				<span class="span_or">OR</span>
 			</p>
-			<div class="l_third">
+			<!-- <div class="l_third">
 				<img src="../assets/Facebook.png" alt="">
 				<img src="../assets/weixin.png" alt="">
 				<img src="../assets/Google.png" alt="">
-			</div>
+			</div> -->
 		</div>
 	</div>
 </template>
